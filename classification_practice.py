@@ -43,7 +43,94 @@ class data_feed :
                                                                              self.Y_tensor,
                                                                              test_size = 0.4,
                                                                              random_state = 42)
+
+
+class Brain(nn.Module):
+    def __init__(self):
+        super().__init__()
+        
+        self.Linear_layer_1 = nn.Linear(in_features= 2 , out_features= 16)
+        self.ReLu1 = nn.ReLU()
+        
+        self.Linear_layer_2 = nn.Linear(in_features= 16 , out_features= 32)
+        self.ReLu2 = nn.ReLU()
+        
+        self.Linear_layer_3 = nn.Linear(in_features= 32 , out_features=8 )
+        self.ReLu3 = nn.ReLU()
+        
+        self.Linear_layer_4 = nn.Linear(in_features= 8 , out_features= 1)
+        
+        self.sequential = nn.Sequential(self.Linear_layer_1,self.ReLu1, 
+                                        self.Linear_layer_2,self.ReLu2,
+                                        self.Linear_layer_3,self.ReLu3,
+                                        self.Linear_layer_4)
+    def forward (self,x):
+        return self.sequential(x)
+
+
+class refine():
+    def __init__(self,samples):
+        self.my_model = Brain()
+        self.data_acess = data_feed(samples)
+        self.data_acess.data_split()
+        
+        
+        self.X_input_train = self.data_acess.X_train
+        self.Y_input_train = self.data_acess.Y_train
+        
+        self.X_input_test = self.data_acess.X_test
+        self.Y_input_test = self.data_acess.Y_test
+        
+        
+        
+        
+        self.optimizer = torch.optim.Adam(params=self.my_model.parameters(),
+                                          lr= 0.001)
+        self.loss_function = nn.BCEWithLogitsLoss()
+        self.epoch = 20
+        self.traning()
+    
+    def traning (self):
+        loss_store_traning = []
+        epoch_store_traning = []
+        
+        self.loss_store_test = []
+        
+        
+        
+        for epoch in range(self.epoch):
+            self.my_model.train()
             
+            self.output_raw = self.my_model(self.X_input_train).squeeze()
+            self.output_with_activation = torch.sigmoid(self.output_raw)
+            self.output_with_roundoff = torch.round(self.output_with_activation)
+            
+            self.loss_calculated_traning = self.loss_function(self.output_raw,self.Y_input_train)
+            
+            
+            self.optimizer.zero_grad()
+            self.loss_calculated_traning.backward()
+            
+            self.optimizer.step()
+            
+            if epoch % 10:
+                loss_store_traning.append(self.loss_calculated_traning.item())
+                epoch_store_traning.append(epoch)
+                print(f"This is the loss During the traning {self.loss_calculated_traning:2f} at this epoch {epoch}")
+        
+            
+            
+            
+    def evulation (self):
+        with torch.inference_mode():
+            
+            self.output_raw_test = self.my_model(self.X_input_test)
+            self.output_with_activation_test = torch.sigmoid(self.output_raw_test)
+            self.output_roundoff_test = torch.round(self.output_with_activation_test)
+            
+            
+            loss_calculated_testing = self.loss_function(self.output_raw_test,self.Y_input_test)
+            self.loss_store_test.append(loss_calculated_testing)
         
         
         
