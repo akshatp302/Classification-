@@ -49,6 +49,11 @@ class data_feed :
         else:
             print("Something error in data spliting")
             
+    def accuracy_check(self,Y_labels,Model_output):
+        correct = torch.eq(Y_labels,Model_output).sum().item()
+        accuracy= (correct/len(Model_output))*100
+        return accuracy        
+            
        
 
 class Brain(nn.Module):
@@ -81,6 +86,7 @@ class refine():
         self.my_model = Brain()
         self.data_acess = data_feed(samples)
         self.data_acess.data_split()
+        # self.data_acess.accuracy_check()
         
         
         self.X_input_train = self.data_acess.X_train
@@ -95,8 +101,9 @@ class refine():
         self.optimizer = torch.optim.Adam(params=self.my_model.parameters(),
                                           lr= 0.001)
         self.loss_function = nn.BCEWithLogitsLoss()
-        self.epoch = 200
+        self.epoch = 2000
         self.traning()
+        self.evulation()
     
     def traning (self):
         loss_store_traning = []
@@ -115,6 +122,10 @@ class refine():
             
             self.loss_calculated_traning = self.loss_function(self.output_raw,self.Y_input_train)
             
+            accuracy_values = self.data_acess.accuracy_check(Y_labels=self.Y_input_train,
+                                           Model_output=self.output_with_roundoff)
+            
+            
             
             self.optimizer.zero_grad()
             self.loss_calculated_traning.backward()
@@ -125,6 +136,7 @@ class refine():
                 loss_store_traning.append(self.loss_calculated_traning.item())
                 epoch_store_traning.append(epoch)
                 print(f"This is the loss During the traning {self.loss_calculated_traning:2f} at this epoch {epoch}")
+                print(accuracy_values)
         
             
             
@@ -139,13 +151,13 @@ class refine():
             
             loss_calculated_testing = self.loss_function(self.output_raw_test,self.Y_input_test)
             self.loss_store_test.append(loss_calculated_testing)
-            print()
+            print(f"The test loss after the no_Gradients{loss_calculated_testing:2f}")
         
         
         
 # Prototype_1 = data_feed(samples=300)
-Proces_1 = refine(300)
-Proces_1.evulation()  
+Proces_1 = refine(5)
+# Proces_1.evulation()  
     
 
         
