@@ -12,8 +12,7 @@ class data_feed :
         self.n = samples
         self.visuals()
         self.data_conversition()
-        # print(self.visuals())
-
+        
     def visuals(self):
         
         self.x_ , self.y_ = make_circles(n_samples= self.n,
@@ -41,13 +40,22 @@ class data_feed :
         
         self.X_train,self.X_test,self.Y_train,self.Y_test = train_test_split(self.X_tensor,
                                                                              self.Y_tensor,
-                                                                             test_size = 0.4,
+                                                                             test_size = 0.3,
                                                                              random_state = 42)
-
+        if len(self.X_train) > 0 and len(self.X_test) > 0:
+            print("The Data has been sucssfully splited ")
+            print(f"The Lenght of the Traning data is {len(self.X_train)}")
+            print(f"The Lenght of the Testing data is {len(self.X_test)}")
+        else:
+            print("Something error in data spliting")
+            
+       
 
 class Brain(nn.Module):
     def __init__(self):
+        
         super().__init__()
+        
         
         self.Linear_layer_1 = nn.Linear(in_features= 2 , out_features= 16)
         self.ReLu1 = nn.ReLU()
@@ -87,7 +95,7 @@ class refine():
         self.optimizer = torch.optim.Adam(params=self.my_model.parameters(),
                                           lr= 0.001)
         self.loss_function = nn.BCEWithLogitsLoss()
-        self.epoch = 20
+        self.epoch = 200
         self.traning()
     
     def traning (self):
@@ -122,19 +130,20 @@ class refine():
             
             
     def evulation (self):
-        with torch.inference_mode():
+        with torch.no_grad():
             
-            self.output_raw_test = self.my_model(self.X_input_test)
+            self.output_raw_test = self.my_model(self.X_input_test).squeeze()
             self.output_with_activation_test = torch.sigmoid(self.output_raw_test)
             self.output_roundoff_test = torch.round(self.output_with_activation_test)
             
             
             loss_calculated_testing = self.loss_function(self.output_raw_test,self.Y_input_test)
             self.loss_store_test.append(loss_calculated_testing)
+            print()
         
         
         
-Prototype_1 = data_feed(samples=300)
+# Prototype_1 = data_feed(samples=300)
 Proces_1 = refine(300)
 Proces_1.evulation()  
     
