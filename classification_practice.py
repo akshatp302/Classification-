@@ -27,7 +27,7 @@ class data_feed :
         plt.show()
         
         table_formate = pd.DataFrame({"X1":self.x_[:,0], "X2 =" :self.x_[:,1], "y =": self.y_})
-        return table_formate.head()
+        print(table_formate.head())
         
     def data_conversition(self):
         
@@ -113,7 +113,7 @@ class refine():
             
             self.optimizer.step()
             
-            if epoch % 10:
+            if epoch % 10 == 0:
                 loss_store_traning.append(self.loss_calculated_traning.item())
                 epoch_store_traning.append(epoch)
                 print(f"This is the loss During the traning {self.loss_calculated_traning:2f} at this epoch {epoch}")
@@ -134,8 +134,11 @@ class refine():
         
         
         
-        
-        
+Prototype_1 = data_feed(samples=300)
+Proces_1 = refine(300)
+Proces_1.evulation()  
+    
+
         
 
 
