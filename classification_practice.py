@@ -82,10 +82,11 @@ class Brain(nn.Module):
 
 
 class refine():
-    def __init__(self,samples):
+    def __init__(self,samples,Epoch):
         self.my_model = Brain()
         self.data_acess = data_feed(samples)
         self.data_acess.data_split()
+        
         
         
         self.loss_store_traning = []
@@ -110,7 +111,7 @@ class refine():
         self.optimizer = torch.optim.Adam(params=self.my_model.parameters(),
                                           lr= 0.001)
         self.loss_function = nn.BCEWithLogitsLoss()
-        self.epoch = 500
+        self.epoch = Epoch
         self.traning()
         self.evulation()
     
@@ -142,7 +143,7 @@ class refine():
                 print(f"This is the loss During the traning {self.loss_calculated_traning:2f} at this epoch {epoch}")
             
             if epoch % 50 == 0:
-                self.accuracy_values_store_test.append(accuracy_values_traning)
+                self.accuracy_values_store_test.append(self.accuracy_values_store_traning)
                 print(f"The accuracy during the traning is {accuracy_values_traning:2f}% at the {epoch}th epoch")
         
             
@@ -162,7 +163,7 @@ class refine():
             
             accuracy_value_testing = self.data_acess.accuracy_check(Y_labels=self.Y_input_test,
                                                                     Model_output=output_roundoff_test)
-            self.accuracy_values_store_traning.append(accuracy_value_testing)
+            self.accuracy_values_store_test.append(accuracy_value_testing)
             
             
             print(f"The test loss after the no_Gradients {loss_calculated_testing:2f}")
@@ -171,7 +172,7 @@ class refine():
         
         
 # Prototype_1 = data_feed(samples=300)
-Proces_1 = refine(100)
+Proces_1 = refine(samples=5000,Epoch=1000)
 
     
 
