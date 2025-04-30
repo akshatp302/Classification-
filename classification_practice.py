@@ -101,7 +101,7 @@ class refine():
         self.optimizer = torch.optim.Adam(params=self.my_model.parameters(),
                                           lr= 0.001)
         self.loss_function = nn.BCEWithLogitsLoss()
-        self.epoch = 2000
+        self.epoch = 100
         self.traning()
         self.evulation()
     
@@ -122,7 +122,7 @@ class refine():
             
             self.loss_calculated_traning = self.loss_function(self.output_raw,self.Y_input_train)
             
-            accuracy_values = self.data_acess.accuracy_check(Y_labels=self.Y_input_train,
+            accuracy_values_traning = self.data_acess.accuracy_check(Y_labels=self.Y_input_train,
                                            Model_output=self.output_with_roundoff)
             
             
@@ -136,7 +136,9 @@ class refine():
                 loss_store_traning.append(self.loss_calculated_traning.item())
                 epoch_store_traning.append(epoch)
                 print(f"This is the loss During the traning {self.loss_calculated_traning:2f} at this epoch {epoch}")
-                print(accuracy_values)
+            
+            elif epoch % 50 == 0:
+                print(f"The accuracy during the traning is{accuracy_values_traning} at the {epoch}th epoch ")
         
             
             
@@ -146,18 +148,25 @@ class refine():
             
             self.output_raw_test = self.my_model(self.X_input_test).squeeze()
             self.output_with_activation_test = torch.sigmoid(self.output_raw_test)
-            self.output_roundoff_test = torch.round(self.output_with_activation_test)
+            output_roundoff_test = torch.round(self.output_with_activation_test)
+        
             
             
             loss_calculated_testing = self.loss_function(self.output_raw_test,self.Y_input_test)
             self.loss_store_test.append(loss_calculated_testing)
+            
+            accuracy_value_testing = self.data_acess.accuracy_check(Y_labels=self.Y_input_train,
+                                                                    Model_output=output_roundoff_test)
+            
+            
             print(f"The test loss after the no_Gradients{loss_calculated_testing:2f}")
+            print(f"The accuracy value at the testing is {accuracy_value_testing} with the test sample of {len(self.Y_input_test)}")
         
         
         
 # Prototype_1 = data_feed(samples=300)
-Proces_1 = refine(5)
-# Proces_1.evulation()  
+Proces_1 = refine(100)
+
     
 
         
