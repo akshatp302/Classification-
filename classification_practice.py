@@ -52,7 +52,16 @@ class data_feed :
     def accuracy_check(self,Y_labels,Model_output):
         correct = torch.eq(Y_labels,Model_output).sum().item()
         accuracy= (correct/len(Model_output))*100
-        return accuracy        
+        return accuracy     
+    
+    def test_train_visuals(self,X_axis,Y_axis,X_label,Y_label,graph_label):
+        plt.figure(figsize=(10,8))
+        plt.plot(X_axis,Y_axis,label =graph_label)
+        plt.xlabel(X_label)
+        plt.ylabel(Y_label)
+        plt.legend()
+        plt.show()
+           
             
        
 
@@ -86,6 +95,7 @@ class refine():
         self.my_model = Brain()
         self.data_acess = data_feed(samples)
         self.data_acess.data_split()
+        # self.graphical_visuals = self.data_acess.test_train_visuals()
         
         
         
@@ -111,6 +121,7 @@ class refine():
         self.optimizer = torch.optim.Adam(params=self.my_model.parameters(),
                                           lr= 0.001)
         self.loss_function = nn.BCEWithLogitsLoss()
+        
         self.epoch = Epoch
         self.traning()
         self.evulation()
@@ -139,15 +150,20 @@ class refine():
             if epoch % 10 == 0:
                 self.loss_store_traning.append(self.loss_calculated_traning.item())
                 self.epoch_store_traning.append(epoch)
+                self.accuracy_values_store_traning.append(self.accuracy_values_store_traning)
+                self.accuracy_values_store_traning.append(self.accuracy_values_store_traning)
                 
                 print(f"This is the loss During the traning {self.loss_calculated_traning:2f} at this epoch {epoch}")
-            
-            if epoch % 50 == 0:
-                self.accuracy_values_store_test.append(self.accuracy_values_store_traning)
                 print(f"The accuracy during the traning is {accuracy_values_traning:2f}% at the {epoch}th epoch")
+                
+                
         
             
-            
+        self.data_acess.test_train_visuals(X_axis=self.loss_store_traning,
+                                           Y_axis=self.epoch_store_traning,
+                                           X_label="LOSS",
+                                           Y_label="Epoch",
+                                           graph_label="Loss vs Epoch graph")
             
     def evulation (self):
         with torch.no_grad():
