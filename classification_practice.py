@@ -86,7 +86,16 @@ class refine():
         self.my_model = Brain()
         self.data_acess = data_feed(samples)
         self.data_acess.data_split()
-        # self.data_acess.accuracy_check()
+        
+        
+        self.loss_store_traning = []
+        self.epoch_store_traning = []
+        self.accuracy_values_store_traning = []
+        
+        
+        self.loss_store_test = []
+        self.accuracy_values_store_test = []
+        
         
         
         self.X_input_train = self.data_acess.X_train
@@ -101,17 +110,11 @@ class refine():
         self.optimizer = torch.optim.Adam(params=self.my_model.parameters(),
                                           lr= 0.001)
         self.loss_function = nn.BCEWithLogitsLoss()
-        self.epoch = 100
+        self.epoch = 500
         self.traning()
         self.evulation()
     
     def traning (self):
-        loss_store_traning = []
-        epoch_store_traning = []
-        
-        self.loss_store_test = []
-        
-        
         
         for epoch in range(self.epoch):
             self.my_model.train()
@@ -133,11 +136,13 @@ class refine():
             self.optimizer.step()
             
             if epoch % 10 == 0:
-                loss_store_traning.append(self.loss_calculated_traning.item())
-                epoch_store_traning.append(epoch)
+                self.loss_store_traning.append(self.loss_calculated_traning.item())
+                self.epoch_store_traning.append(epoch)
+                
                 print(f"This is the loss During the traning {self.loss_calculated_traning:2f} at this epoch {epoch}")
             
             if epoch % 50 == 0:
+                self.accuracy_values_store_test.append(accuracy_values_traning)
                 print(f"The accuracy during the traning is {accuracy_values_traning:2f}% at the {epoch}th epoch")
         
             
@@ -157,6 +162,7 @@ class refine():
             
             accuracy_value_testing = self.data_acess.accuracy_check(Y_labels=self.Y_input_test,
                                                                     Model_output=output_roundoff_test)
+            self.accuracy_values_store_traning.append(accuracy_value_testing)
             
             
             print(f"The test loss after the no_Gradients {loss_calculated_testing:2f}")
