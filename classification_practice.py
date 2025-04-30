@@ -137,8 +137,8 @@ class refine():
                 epoch_store_traning.append(epoch)
                 print(f"This is the loss During the traning {self.loss_calculated_traning:2f} at this epoch {epoch}")
             
-            elif epoch % 50 == 0:
-                print(f"The accuracy during the traning is{accuracy_values_traning} at the {epoch}th epoch ")
+            if epoch % 50 == 0:
+                print(f"The accuracy during the traning is {accuracy_values_traning:2f}% at the {epoch}th epoch")
         
             
             
@@ -155,12 +155,12 @@ class refine():
             loss_calculated_testing = self.loss_function(self.output_raw_test,self.Y_input_test)
             self.loss_store_test.append(loss_calculated_testing)
             
-            accuracy_value_testing = self.data_acess.accuracy_check(Y_labels=self.Y_input_train,
+            accuracy_value_testing = self.data_acess.accuracy_check(Y_labels=self.Y_input_test,
                                                                     Model_output=output_roundoff_test)
             
             
-            print(f"The test loss after the no_Gradients{loss_calculated_testing:2f}")
-            print(f"The accuracy value at the testing is {accuracy_value_testing} with the test sample of {len(self.Y_input_test)}")
+            print(f"The test loss after the no_Gradients {loss_calculated_testing:2f}")
+            print(f"The accuracy value at the testing is {accuracy_value_testing:2f}% with the test sample of {len(self.Y_input_test)}")
         
         
         
