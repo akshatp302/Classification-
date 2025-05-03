@@ -159,10 +159,10 @@ class refine():
                 
         
             
-        self.data_acess.test_train_visuals(X_axis=self.loss_store_traning,
-                                           Y_axis=self.epoch_store_traning,
-                                           X_label="LOSS",
-                                           Y_label="Epoch",
+        self.data_acess.test_train_visuals(X_axis=self.epoch_store_traning,
+                                           Y_axis=self.loss_store_traning,
+                                           X_label="Epoch",
+                                           Y_label="Loss",
                                            graph_label="Loss vs Epoch graph")
             
     def evulation (self):
@@ -188,7 +188,7 @@ class refine():
         
         
 # Prototype_1 = data_feed(samples=300)
-Proces_1 = refine(samples=5000,Epoch=1000)
+Proces_1 = refine(samples=100,Epoch=20)
 
     
 
