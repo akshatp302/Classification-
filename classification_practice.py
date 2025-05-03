@@ -13,6 +13,7 @@ class data_feed :
         self.visuals()
         self.data_conversition()
         
+        
     def visuals(self):
         
         self.x_ , self.y_ = make_circles(n_samples= self.n,
@@ -46,6 +47,7 @@ class data_feed :
             print("The Data has been sucssfully splited ")
             print(f"The Lenght of the Traning data is {len(self.X_train)}")
             print(f"The Lenght of the Testing data is {len(self.X_test)}")
+            # print(f"The total epoch are {self.epoch_counts}")
         else:
             print("Something error in data spliting")
             
@@ -73,18 +75,20 @@ class Brain(nn.Module):
         
         self.Linear_layer_1 = nn.Linear(in_features= 2 , out_features= 16)
         self.ReLu1 = nn.ReLU()
+        self.dropout1 = nn.Dropout(0.2)
         
         self.Linear_layer_2 = nn.Linear(in_features= 16 , out_features= 32)
         self.ReLu2 = nn.ReLU()
         
         self.Linear_layer_3 = nn.Linear(in_features= 32 , out_features=8 )
         self.ReLu3 = nn.ReLU()
+        self.dropout3 = nn.Dropout(0.1)
         
         self.Linear_layer_4 = nn.Linear(in_features= 8 , out_features= 1)
         
-        self.sequential = nn.Sequential(self.Linear_layer_1,self.ReLu1, 
+        self.sequential = nn.Sequential(self.Linear_layer_1,self.ReLu1, self.dropout1, 
                                         self.Linear_layer_2,self.ReLu2,
-                                        self.Linear_layer_3,self.ReLu3,
+                                        self.Linear_layer_3,self.ReLu3,self.dropout3,
                                         self.Linear_layer_4)
     def forward (self,x):
         return self.sequential(x)
@@ -101,7 +105,7 @@ class refine():
         
         self.loss_store_traning = []
         self.epoch_store_traning = []
-        self.accuracy_values_store_traning = []
+        self.accuracy_store_traning = []
         
         
         self.loss_store_test = []
@@ -119,7 +123,9 @@ class refine():
         
         
         self.optimizer = torch.optim.Adam(params=self.my_model.parameters(),
-                                          lr= 0.001)
+                                          lr= 0.005)
+        self.schedular = torch.optim.lr_scheduler.StepLR(optimizer=self.optimizer,step_size=100,gamma=0.10)
+        
         self.loss_function = nn.BCEWithLogitsLoss()
         
         self.epoch = Epoch
@@ -146,12 +152,14 @@ class refine():
             self.loss_calculated_traning.backward()
             
             self.optimizer.step()
+            self.schedular.step()
+            
             
             if epoch % 10 == 0:
                 self.loss_store_traning.append(self.loss_calculated_traning.item())
                 self.epoch_store_traning.append(epoch)
-                self.accuracy_values_store_traning.append(self.accuracy_values_store_traning)
-                self.accuracy_values_store_traning.append(self.accuracy_values_store_traning)
+                self.accuracy_store_traning.append(accuracy_values_traning)
+                # self.accuracy_values_store_traning.append(self.accuracy_values_store_traning)
                 
                 print(f"This is the loss During the traning {self.loss_calculated_traning:2f} at this epoch {epoch}")
                 print(f"The accuracy during the traning is {accuracy_values_traning:2f}% at the {epoch}th epoch")
@@ -182,13 +190,18 @@ class refine():
             self.accuracy_values_store_test.append(accuracy_value_testing)
             
             
-            print(f"The test loss after the no_Gradients {loss_calculated_testing:2f}")
+            print(f"The test loss in the Tresting {loss_calculated_testing:2f}")
             print(f"The accuracy value at the testing is {accuracy_value_testing:2f}% with the test sample of {len(self.Y_input_test)}")
         
         
         
 # Prototype_1 = data_feed(samples=300)
-Proces_1 = refine(samples=100,Epoch=20)
+Proces_1 = refine(samples=1000,Epoch=1357)
+
+
+
+
+
 
     
 
